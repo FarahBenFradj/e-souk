@@ -99,4 +99,24 @@ public class OrderController {
         model.addAttribute("pageTitle", "Commande " + order.getOrderNumber() + " - E-Souk");
         return "order/detail";
     }
+    
+    @GetMapping("/orders/{id}/receipt")
+    public String receipt(@PathVariable Long id, Authentication auth, Model model) {
+        Order order = orderService.findById(id);
+
+        if (!order.getUser().getEmail().equals(auth.getName())
+                && !auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            return "redirect:/403";
+        }
+
+        // ← AJOUTER CES 2 LIGNES
+        String formattedDate = order.getCreatedAt()
+            .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm"));
+
+        model.addAttribute("order", order);
+        model.addAttribute("formattedDate", formattedDate); // ← AJOUTER
+        model.addAttribute("pageTitle", "Reçu " + order.getOrderNumber() + " — E-Souk");
+        return "order/receipt";
+    }
 }

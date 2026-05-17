@@ -12,6 +12,7 @@ public class HomeController {
 
     private final ProductService productService;
 
+    
     @GetMapping({"/", "/home"})
     public String home(Model model) {
         model.addAttribute("featuredProducts", productService.findFeatured());
